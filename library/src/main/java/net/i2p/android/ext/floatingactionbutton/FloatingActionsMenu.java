@@ -1,9 +1,5 @@
-package com.getbase.floatingactionbutton;
+package net.i2p.android.ext.floatingactionbutton;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -15,6 +11,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.ContextThemeWrapper;
 import android.view.TouchDelegate;
@@ -24,6 +21,12 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.TextView;
+
+import com.nineoldandroids.animation.Animator;
+import com.nineoldandroids.animation.AnimatorListenerAdapter;
+import com.nineoldandroids.animation.AnimatorSet;
+import com.nineoldandroids.animation.ObjectAnimator;
+import com.nineoldandroids.view.ViewHelper;
 
 public class FloatingActionsMenu extends ViewGroup {
   public static final int EXPAND_UP = 0;
@@ -94,8 +97,8 @@ public class FloatingActionsMenu extends ViewGroup {
 
     TypedArray attr = context.obtainStyledAttributes(attributeSet, R.styleable.FloatingActionsMenu, 0, 0);
     mAddButtonPlusColor = attr.getColor(R.styleable.FloatingActionsMenu_fab_addButtonPlusIconColor, getColor(android.R.color.white));
-    mAddButtonColorNormal = attr.getColor(R.styleable.FloatingActionsMenu_fab_addButtonColorNormal, getColor(android.R.color.holo_blue_dark));
-    mAddButtonColorPressed = attr.getColor(R.styleable.FloatingActionsMenu_fab_addButtonColorPressed, getColor(android.R.color.holo_blue_light));
+    mAddButtonColorNormal = attr.getColor(R.styleable.FloatingActionsMenu_fab_addButtonColorNormal, getColor(R.color.default_normal));
+    mAddButtonColorPressed = attr.getColor(R.styleable.FloatingActionsMenu_fab_addButtonColorPressed, getColor(R.color.default_pressed));
     mAddButtonSize = attr.getInt(R.styleable.FloatingActionsMenu_fab_addButtonSize, FloatingActionButton.SIZE_NORMAL);
     mAddButtonStrokeVisible = attr.getBoolean(R.styleable.FloatingActionsMenu_fab_addButtonStrokeVisible, true);
     mExpandDirection = attr.getInt(R.styleable.FloatingActionsMenu_fab_expandDirection, EXPAND_UP);
@@ -316,8 +319,8 @@ public class FloatingActionsMenu extends ViewGroup {
         float collapsedTranslation = addButtonY - childY;
         float expandedTranslation = 0f;
 
-        child.setTranslationY(mExpanded ? expandedTranslation : collapsedTranslation);
-        child.setAlpha(mExpanded ? 1f : 0f);
+        ViewHelper.setTranslationY(child, mExpanded ? expandedTranslation : collapsedTranslation);
+        ViewHelper.setAlpha(child, mExpanded ? 1f : 0f);
 
         LayoutParams params = (LayoutParams) child.getLayoutParams();
         params.mCollapseDir.setFloatValues(expandedTranslation, collapsedTranslation);
@@ -349,8 +352,8 @@ public class FloatingActionsMenu extends ViewGroup {
               childY + child.getMeasuredHeight() + mButtonSpacing / 2);
           mTouchDelegateGroup.addTouchDelegate(new TouchDelegate(touchArea, child));
 
-          label.setTranslationY(mExpanded ? expandedTranslation : collapsedTranslation);
-          label.setAlpha(mExpanded ? 1f : 0f);
+          ViewHelper.setTranslationY(label, mExpanded ? expandedTranslation : collapsedTranslation);
+          ViewHelper.setAlpha(label, mExpanded ? 1f : 0f);
 
           LayoutParams labelParams = (LayoutParams) label.getLayoutParams();
           labelParams.mCollapseDir.setFloatValues(expandedTranslation, collapsedTranslation);
@@ -389,8 +392,8 @@ public class FloatingActionsMenu extends ViewGroup {
         float collapsedTranslation = addButtonX - childX;
         float expandedTranslation = 0f;
 
-        child.setTranslationX(mExpanded ? expandedTranslation : collapsedTranslation);
-        child.setAlpha(mExpanded ? 1f : 0f);
+        ViewHelper.setTranslationX(child, mExpanded ? expandedTranslation : collapsedTranslation);
+        ViewHelper.setAlpha(child, mExpanded ? 1f : 0f);
 
         LayoutParams params = (LayoutParams) child.getLayoutParams();
         params.mCollapseDir.setFloatValues(expandedTranslation, collapsedTranslation);
@@ -446,22 +449,22 @@ public class FloatingActionsMenu extends ViewGroup {
       mCollapseDir.setInterpolator(sCollapseInterpolator);
       mCollapseAlpha.setInterpolator(sCollapseInterpolator);
 
-      mCollapseAlpha.setProperty(View.ALPHA);
+      mCollapseAlpha.setPropertyName("alpha");
       mCollapseAlpha.setFloatValues(1f, 0f);
 
-      mExpandAlpha.setProperty(View.ALPHA);
+      mExpandAlpha.setPropertyName("alpha");
       mExpandAlpha.setFloatValues(0f, 1f);
 
       switch (mExpandDirection) {
       case EXPAND_UP:
       case EXPAND_DOWN:
-        mCollapseDir.setProperty(View.TRANSLATION_Y);
-        mExpandDir.setProperty(View.TRANSLATION_Y);
+        mCollapseDir.setPropertyName("translationY");
+        mExpandDir.setPropertyName("translationY");
         break;
       case EXPAND_LEFT:
       case EXPAND_RIGHT:
-        mCollapseDir.setProperty(View.TRANSLATION_X);
-        mExpandDir.setProperty(View.TRANSLATION_X);
+        mCollapseDir.setPropertyName("translationX");
+        mExpandDir.setPropertyName("translationX");
         break;
       }
     }
@@ -489,12 +492,12 @@ public class FloatingActionsMenu extends ViewGroup {
       animator.addListener(new AnimatorListenerAdapter() {
         @Override
         public void onAnimationEnd(Animator animation) {
-          view.setLayerType(LAYER_TYPE_NONE, null);
+          ViewCompat.setLayerType(view, ViewCompat.LAYER_TYPE_NONE, null);
         }
 
         @Override
         public void onAnimationStart(Animator animation) {
-          view.setLayerType(LAYER_TYPE_HARDWARE, null);
+          ViewCompat.setLayerType(view, ViewCompat.LAYER_TYPE_HARDWARE, null);
         }
       });
     }

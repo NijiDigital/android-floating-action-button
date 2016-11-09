@@ -1,7 +1,7 @@
-package com.getbase.floatingactionbutton.sample;
+package net.i2p.android.ext.floatingactionbutton.sample;
 
-import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import net.i2p.android.ext.floatingactionbutton.FloatingActionButton;
+import net.i2p.android.ext.floatingactionbutton.FloatingActionsMenu;
 
 import android.app.Activity;
 import android.graphics.drawable.ShapeDrawable;
